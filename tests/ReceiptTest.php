@@ -13,6 +13,7 @@ class ReceiptTest extends TestCase {
     public function tearDown() {
         unset($this->Receipt);
     }
+    //total tähendus siin: public function total(array
     public function testTotal() {
         $input = [0,2,5,8];
         $output = $this->Receipt->total($input);
@@ -31,6 +32,10 @@ class ReceiptTest extends TestCase {
             1.00,
             $output,
             'The tax calculation should equal 1.00'
+            //kui kirjutada src/Resiept.php: public function tax($amount, $tax)
+            //{
+            //return $amount*$tax
+            //}
         );
     }
 }
