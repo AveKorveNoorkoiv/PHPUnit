@@ -52,7 +52,7 @@ public function provideTotal() { // andme edastus funktsioon koos etteantud vä�
             [[1,2,8], 11], // kokku 11
         ];
     }
-    // uus funktsioon "testTotalAndCoupon", aga koos coupon-i väärtusega
+    // uus funktsioon "testTotalAndCoupon", aga koos coupon-i väärtusega. Testimeetod, mis kontrollib summa ning summale lisatud kupongi arvutamise korrektset toimimist
     public function testTotalAndCoupon() {
         $input = [0,2,5,8];
         $coupon = 0.20; // nüüd on väärtus olemas
@@ -71,4 +71,32 @@ public function provideTotal() { // andme edastus funktsioon koos etteantud vä�
         $this->Receipt->total($input, $coupon);
     }
 
+// kogu summale maksu õigesti lisamise kontroll-funktsioon koos Mock objektiga
+
+    public function testPostTaxTotal() {
+        $items = [1,2,5,8];
+        $tax = 0.20;
+        $coupon = null;
+        $Receipt = $this->getMockBuilder('TDD\Receipt')
+            // Receipt klassi alusel luuakse Mock objekt
+        ->setMethods(['tax', 'total']) // need meetodid lisatakse Mock objektile
+        ->getMock(); // Mock object omab Receipt objekti omadusi
+        $Receipt->expects($this->once()) // meetod total kutsutakse välja üks kord
+        ->method('total') // Mock objekti meetod total
+        ->with($items, $coupon) // need on argumentideks
+        ->will($this->returnValue(10.00)); // ette antud suurus total=10
+        $Receipt->expects($this->once()) // meetod tax kutsutakse välja üks kord
+        ->method('tax') // Mock objekti meetod tax
+        ->with(10.00, $tax) // koos väärtuse ja argumendiga
+        ->will($this->returnValue(1.00)); // ette antud suurus tax=1
+        $result = $Receipt->postTaxTotal([1,2,5,8], 0.20, null); // mock objekti meetod koos argumentidega
+        //veendutakse, et kutsuti välja Mock-objekti meetod total(), mis tagastas väärtuse 10.00 ning sama Mock-objekti
+        // meetod tax(), mis tagastas väärtuse 1.00. Veendutakse, et mõlemad kutsututi välja ainult üks kord - expects($this->once())
+        // NB! Kui liita aga kokku 115. real olevad massiiviliikmed 1,2,5,8 ning summast (16) lahutada maha kupongi väärtus (16-16*0.2),
+        // siis saame tulemuseks 16-3.2=12.8. Seega, kui oleks tegu reaalse Receipt-klassi objektiga, siis real 124 olev assertEquals()
+        // tagastaks "false" ehk testi tulemuseks oleks veateada (kuna 11.00 ei võrdu 12.8)
+        // Kuna antud testis on kasutusel Mock-objekt, siis testitakse ainult tingimusi, mis on kirjeldatud real 117-118 ning
+        // seetõttu assertEquals(11.00, $result) tagastab "true"
+        $this->assertEquals(11.00, $result); // selline, ehk 11, peab olema Mock objekti tulemus
+    }
 
