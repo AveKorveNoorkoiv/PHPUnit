@@ -27,17 +27,14 @@ class ReceiptTest extends TestCase { //Luuakse ReceiptTest klass, sellele laiene
     }
 
     public function testTax() {
-        $inputAmount = 10.00;
-        $taxInput = 0.10;
-        $output = $this->Receipt->tax($inputAmount, $taxInput);
-        $this->assertEquals(
-            1.00,
-            $output,
-            'The tax calculation should equal 1.00'
-            //kui kirjutada src/Resiept.php: public function tax($amount, $tax)
-            //{
-            //return $amount*$tax
-            //}
+        $inputAmount = 10.00; // sisendväärtus
+        $taxInput = 0.10; // kasu sisend
+        $output = $this->Receipt->tax($inputAmount, $taxInput); // muutuja ja kutsume muutuja tax
+        $this->assertEquals( // veendu et võrdub
+            1.00, // oodatav tulemus
+            $output, // see mis tuleb reaalselt
+            //kui kirjutada src/Resiept.php: public function tax($amount, $tax)return $amount*$tax
+            'The tax calculation should equal 1.00' // teade tuleb vea korral
         );
     }
 }
