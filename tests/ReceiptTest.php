@@ -6,10 +6,11 @@ use PHPUnit\Framework\TestCase;
 use TDD\Receipt;
 
 
-//Luuakse ReceiptTest klass, sellele laienevad TestCase klassi väärtused
-class ReceiptTest extends TestCase {
-    public function setUp() {
-        $this->Receipt = new Receipt();
+
+class ReceiptTest extends TestCase { //Luuakse ReceiptTest klass, sellele laienevad TestCase klassi väärtused
+
+    public function setUp() { // laiendab TestCase klassi, pannakse tööle enne testmeetodite käivitamist, seal tehakse testimiseks vajalikud ettevalmistused
+        $this->Receipt = new Receipt(); // luuakse uus objekt nimega Receipt
     }
 
     public function tearDown() {
