@@ -26,17 +26,6 @@ class ReceiptTest extends TestCase { //Luuakse ReceiptTest klass, sellele laiene
         );
     }
 
-    public function testTax() {
-        $inputAmount = 10.00; // sisendv채채rtus
-        $taxInput = 0.10; // kasu sisend
-        $output = $this->Receipt->tax($inputAmount, $taxInput); // muutuja ja kutsume muutuja tax
-        $this->assertEquals( // veendu et v천rdub
-            1.00, // oodatav tulemus
-            $output, // see mis tuleb reaalselt
-            //kui kirjutada src/Resiept.php: public function tax($amount, $tax)return $amount*$tax
-            'The tax calculation should equal 1.00' // teade tuleb vea korral
-        );
-    }
 
 public function provideTotal() { // andme edastus funktsioon koos etteantud v채채rtustega
     return [
@@ -100,3 +89,14 @@ public function provideTotal() { // andme edastus funktsioon koos etteantud v채�
         $this->assertEquals(11.00, $result); // selline, ehk 11, peab olema Mock objekti tulemus
     }
 
+    public function testTax() { //testitakse summale makusosa lisamist
+        $inputAmount = 10.00; // sisendv채채rtus
+        $taxInput = 0.10; // kasu sisend
+        $output = $this->Receipt->tax($inputAmount, $taxInput);
+        $this->assertEquals( // veendu et v천rdub
+            1.00, // oodatav tulemus
+            $output, // see mis tuleb reaalselt
+            //kui kirjutada src/Resiept.php: public function tax($amount, $tax)return $amount*$tax
+            'The tax calculation should equal 1.00' // teade tuleb vea korral
+        );
+    }
