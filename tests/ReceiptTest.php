@@ -12,18 +12,17 @@ class ReceiptTest extends TestCase { //Luuakse ReceiptTest klass, sellele laiene
     public function setUp() { // laiendab TestCase klassi, pannakse tööle enne testmeetodite käivitamist, seal tehakse testimiseks vajalikud ettevalmistused
         $this->Receipt = new Receipt(); // luuakse uus objekt nimega Receipt
     }
-
+//Dummy object
     public function tearDown() {
-        unset($this->Receipt);
+        unset($this->Receipt); //objekt $Receipt kustutatakse mälust
     }
-    //total tähendus siin: public function total(array
-    public function testTotal() {
-        $input = [0,2,5,8];
-        $output = $this->Receipt->total($input);
-        $this->assertEquals(
-            15,
-            $output,
-            'When summing the total should equal 15'
+    public function testTotal($items, $expected) { //
+        $coupon = null; // muutuja on väärtuseta
+        $output = $this->Receipt->total($items, $coupon); // kutsutakse välja total meetod ja annab ette items-i ja coupon-i
+        $this->assertEquals( // veendu et võrdub
+            $expected, //
+            $output, // see mis tuleb reaalselt
+            'When summing the total should equal {$expected}' // teade tuleb vea korral
         );
     }
 
