@@ -5,6 +5,8 @@ require 'vendor\autoload.php';
 use PHPUnit\Framework\TestCase;
 use TDD\Receipt;
 
+
+//Luuakse ReceiptTest klass, sellele laienevad TestCase klassi väärtused
 class ReceiptTest extends TestCase {
     public function setUp() {
         $this->Receipt = new Receipt();
