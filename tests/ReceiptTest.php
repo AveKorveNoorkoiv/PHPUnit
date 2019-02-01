@@ -37,4 +37,38 @@ class ReceiptTest extends TestCase { //Luuakse ReceiptTest klass, sellele laiene
             'The tax calculation should equal 1.00' // teade tuleb vea korral
         );
     }
+
+public function provideTotal() { // andme edastus funktsioon koos etteantud väärtustega
+    return [
+        'ints totaling 16' => [[1,2,5,8], 16], // kokku 16
+        [[-1,2,5,8], 14], // kokku 14
+        [[1,2,8], 11], // kokku 11
+    ];
 }
+    public function provideTotal() { // andme edastus funktsioon koos etteantud väärtustega
+        return [
+            'ints totaling 16' => [[1,2,5,8], 16], // kokku 16
+            [[-1,2,5,8], 14], // kokku 14
+            [[1,2,8], 11], // kokku 11
+        ];
+    }
+    // uus funktsioon "testTotalAndCoupon", aga koos coupon-i väärtusega
+    public function testTotalAndCoupon() {
+        $input = [0,2,5,8];
+        $coupon = 0.20; // nüüd on väärtus olemas
+        $output = $this->Receipt->total($input, $coupon);
+        $this->assertEquals( // veendu et võrdub
+            12, // oodatav tulemus
+            $output, // see mis tuleb reaalselt
+            'When summing the total should equal 12' // teade tuleb vea korral
+        );
+    }
+    // Kui tagasikutsumine viitab määratlemata meetodile või kui puuduvad mõned argumendid
+    public function testTotalException() {
+        $input = [0,2,5,8];
+        $coupon = 1.20;
+        $this->expectException('BadMethodCallException');
+        $this->Receipt->total($input, $coupon);
+    }
+
+
