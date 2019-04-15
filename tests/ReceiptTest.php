@@ -6,53 +6,69 @@ use PHPUnit\Framework\TestCase;
 use TDD\Receipt;
 
 
-//Luuakse ReceiptTest klass, sellele laienevad TestCase klassi väärtused
+    //Luuakse ReceiptTest klass, sellele laienevad TestCase klassi väärtused
 class ReceiptTest extends TestCase {
 
-    public function setUp() { // laiendab TestCase klassi, pannakse tööle enne testmeetodite käivitamist, seal tehakse testimiseks vajalikud ettevalmistused
-        $this->Receipt = new Receipt(); // luuakse uus objekt nimega Receipt
+    // laiendab TestCase klassi, pannakse tööle enne testmeetodite käivitamist, seal tehakse testimiseks vajalikud ettevalmistused
+    public function setUp() {
+    // luuakse uus objekt nimega Receipt
+        $this->Receipt = new Receipt();
     }
-//Dummy object
+    //Dummy object
     public function tearDown() {
-        unset($this->Receipt); //objekt $Receipt kustutatakse mälust
+    //objekt $Receipt kustutatakse mälust
+        unset($this->Receipt);
     }
-    public function testTotal($items, $expected) { //
-        $coupon = null; // muutuja on väärtuseta
-        $output = $this->Receipt->total($items, $coupon); // kutsutakse välja total meetod ja annab ette items-i ja coupon-i
-        $this->assertEquals( // veendu et võrdub
+    public function testTotal($items, $expected) {
+     // muutuja on väärtuseta
+        $coupon = null;
+      // kutsutakse välja total meetod ja annab ette items-i ja coupon-i
+        $output = $this->Receipt->total($items, $coupon);
+      // veendu et võrdub
+        $this->assertEquals(
             $expected, //
-            $output, // see mis tuleb reaalselt
-            'When summing the total should equal {$expected}' // teade tuleb vea korral
+            $output,
+      // see teade tuleb vea korral
+            'When summing the total should equal {$expected}'
         );
     }
 
-
-public function provideTotal() { // andme edastus funktsioon koos etteantud väärtustega
+    // andme edastus funktsioon koos ette antud väärtustega
+public function provideTotal() {
     return [
-        'ints totaling 16' => [[1,2,5,8], 16], // kokku 16
-        [[-1,2,5,8], 14], // kokku 14
-        [[1,2,8], 11], // kokku 11
+     // kokku 16 jne
+        'ints totaling 16' => [[1,2,5,8], 16],
+        [[-1,2,5,8], 14],
+        [[1,2,8], 11],
     ];
 }
-    public function provideTotal() { // andme edastus funktsioon koos etteantud väärtustega
+
+    // andme edastus funktsioon koos etteantud väärtustega
+    public function provideTotal() {
         return [
-            'ints totaling 16' => [[1,2,5,8], 16], // kokku 16
-            [[-1,2,5,8], 14], // kokku 14
-            [[1,2,8], 11], // kokku 11
+            'ints totaling 16' => [[1,2,5,8], 16],
+            [[-1,2,5,8], 14],
+            [[1,2,8], 11],
         ];
     }
-    // uus funktsioon "testTotalAndCoupon", aga koos coupon-i väärtusega. Testimeetod, mis kontrollib summa ning summale lisatud kupongi arvutamise korrektset toimimist
+    // uus funktsioon "testTotalAndCoupon", aga koos coupon-i väärtusega.
+    //Testimeetod, mis kontrollib summa ning summale lisatud kupongi arvutamise korrektset toimimist
     public function testTotalAndCoupon() {
         $input = [0,2,5,8];
-        $coupon = 0.20; // nüüd on väärtus olemas
+     // nüüd on väärtus olemas
+        $coupon = 0.20;
         $output = $this->Receipt->total($input, $coupon);
-        $this->assertEquals( // veendu et võrdub
-            12, // oodatav tulemus
-            $output, // see mis tuleb reaalselt
-            'When summing the total should equal 12' // teade tuleb vea korral
+        $this->assertEquals(
+      // oodatav tulemus
+            12,
+     // see mis tuleb reaalselt
+            $output,
+     // teade tuleb vea korral
+            'When summing the total should equal 12'
         );
     }
-    // Kui tagasikutsumine viitab määratlemata meetodile või kui puuduvad mõned argumendid
+    // Kui tagasikutsumine viitab määratlemata meetodile
+    //või kui puuduvad mõned argumendid
     public function testTotalException() {
         $input = [0,2,5,8];
         $coupon = 1.20;
@@ -60,43 +76,55 @@ public function provideTotal() { // andme edastus funktsioon koos etteantud vä�
         $this->Receipt->total($input, $coupon);
     }
 
-// kogu summale maksu õigesti lisamise kontroll-funktsioon koos Mock objektiga
-
+    // kogu summale maksu õigesti lisamise kontroll-funktsioon koos Mock objektiga
     public function testPostTaxTotal() {
         $items = [1,2,5,8];
         $tax = 0.20;
         $coupon = null;
         $Receipt = $this->getMockBuilder('TDD\Receipt')
-            // Receipt klassi alusel luuakse Mock objekt
-        ->setMethods(['tax', 'total']) // need meetodid lisatakse Mock objektile
-        ->getMock(); // Mock object omab Receipt objekti omadusi
-        $Receipt->expects($this->once()) // meetod total kutsutakse välja üks kord
-        ->method('total') // Mock objekti meetod total
-        ->with($items, $coupon) // need on argumentideks
-        ->will($this->returnValue(10.00)); // ette antud suurus total=10
-        $Receipt->expects($this->once()) // meetod tax kutsutakse välja üks kord
-        ->method('tax') // Mock objekti meetod tax
-        ->with(10.00, $tax) // koos väärtuse ja argumendiga
-        ->will($this->returnValue(1.00)); // ette antud suurus tax=1
-        $result = $Receipt->postTaxTotal([1,2,5,8], 0.20, null); // mock objekti meetod koos argumentidega
-        //veendutakse, et kutsuti välja Mock-objekti meetod total(), mis tagastas väärtuse 10.00 ning sama Mock-objekti
-        // meetod tax(), mis tagastas väärtuse 1.00. Veendutakse, et mõlemad kutsututi välja ainult üks kord - expects($this->once())
-        // NB! Kui liita aga kokku 115. real olevad massiiviliikmed 1,2,5,8 ning summast (16) lahutada maha kupongi väärtus (16-16*0.2),
-        // siis saame tulemuseks 16-3.2=12.8. Seega, kui oleks tegu reaalse Receipt-klassi objektiga, siis real 124 olev assertEquals()
-        // tagastaks "false" ehk testi tulemuseks oleks veateada (kuna 11.00 ei võrdu 12.8)
-        // Kuna antud testis on kasutusel Mock-objekt, siis testitakse ainult tingimusi, mis on kirjeldatud real 117-118 ning
-        // seetõttu assertEquals(11.00, $result) tagastab "true"
-        $this->assertEquals(11.00, $result); // selline, ehk 11, peab olema Mock objekti tulemus
+     // Receipt klassi alusel luuakse Mock objekt
+     // need meetodid lisatakse Mock objektile
+        ->setMethods(['tax', 'total'])
+    // Mock objectil on Receipt objekti omadused
+        ->getMock();
+    // meetod total kutsutakse välja üks kord
+        $Receipt->expects($this->once())
+     // Mock objekti meetod total
+        ->method('total')
+     // argumentidid
+        ->with($items, $coupon)
+      // siin on ette antud suurus total=10
+        ->will($this->returnValue(10.00));
+      // meetod tax kutsutakse välja ainult üks kord
+        $Receipt->expects($this->once())
+     // see on Mock objekti meetod tax
+        ->method('tax')
+     // koos väärtuse ja argumendiga (kui enne oli ainult argumendid)
+        ->with(10.00, $tax)
+    // ette antud suurus tax=1
+        ->will($this->returnValue(1.00));
+    // mock objekti meetod koos argumentidega
+        $result = $Receipt->postTaxTotal([1,2,5,8], 0.20, null);
+    //  11 peab olema Mock objekti tulemus  antud juhul
+        $this->assertEquals(11.00, $result);
     }
 
-    public function testTax() { //testitakse summale makusosa lisamist
-        $inputAmount = 10.00; // sisendväärtus
-        $taxInput = 0.10; // kasu sisend
+    //testitakse summale makusosa lisamist
+    public function testTax() {
+     // sisendväärtus
+        $inputAmount = 10.00;
+     // kasu sisend
+        $taxInput = 0.10;
+
         $output = $this->Receipt->tax($inputAmount, $taxInput);
-        $this->assertEquals( // veendu et võrdub
-            1.00, // oodatav tulemus
-            $output, // see mis tuleb reaalselt
-            //kui kirjutada src/Resiept.php: public function tax($amount, $tax)return $amount*$tax
-            'The tax calculation should equal 1.00' // teade tuleb vea korral
+      // veendu et võrdub
+        $this->assertEquals(
+      // oodatav tulemus
+            1.00,
+      // see mis tuleb reaalselt
+            $output,
+            // see teade tuleb vea korral
+            'The tax calculation should equal 1.00'
         );
+      }
     }
